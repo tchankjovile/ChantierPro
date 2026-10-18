@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<VerticalStackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     x:Class="ChantierPro.Mobile.Controls.ProgressGauge"
+                     Spacing="6">
+
+    <Grid ColumnDefinitions="*,Auto">
+        <Label x:Name="lblTitle"
+               Grid.Column="0"
+               Style="{StaticResource Subheading}"
+               Text="Avancement global"
+               VerticalOptions="Center" />
+        <Border x:Name="badgeProgress"
+                Grid.Column="1"
+                Padding="8,2"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 8"
+                BackgroundColor="#1F3A5F1A">
+            <Label x:Name="lblPercent"
+                   FontFamily="InterBold"
+                   FontSize="13"
+                   TextColor="{StaticResource Primary}"
+                   Text="0 %" />
+        </Border>
+    </Grid>
+
+    <Grid HeightRequest="10" VerticalOptions="Center">
+        <!-- Track de fond -->
+        <Border StrokeShape="RoundRectangle 5"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                HeightRequest="10" />
+
+        <!-- Barre de remplissage -->
+        <Border x:Name="barFill"
+                StrokeShape="RoundRectangle 5"
+                StrokeThickness="0"
+                BackgroundColor="{StaticResource Success}"
+                HeightRequest="10"
+                HorizontalOptions="Start"
+                WidthRequest="0" />
+    </Grid>
+
+    <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding ShowMinMax, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
+        <Label Style="{StaticResource Caption}" Text="0 %" />
+        <Label x:Name="lblExpected" Grid.Column="1" HorizontalOptions="Center" Style="{StaticResource Caption}" Text="" />
+        <Label Grid.Column="2" Style="{StaticResource Caption}" Text="100 %" />
+    </Grid>
+</VerticalStackLayout>

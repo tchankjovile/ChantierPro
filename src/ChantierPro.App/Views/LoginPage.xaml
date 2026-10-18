@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="28" Padding="24,40,24,32" MaximumWidthRequest="460">
+
+            <!-- Logo et En-tête -->
+            <VerticalStackLayout Spacing="12" HorizontalOptions="Center" Margin="0,20,0,10">
+                <Border WidthRequest="84" HeightRequest="84"
+                        StrokeShape="RoundRectangle 24"
+                        StrokeThickness="0"
+                        BackgroundColor="{StaticResource Primary}"
+                        HorizontalOptions="Center">
+                    <Label Style="{StaticResource IconGlyph}"
+                           Text="{x:Static helpers:Icons.Construction}"
+                           FontSize="44"
+                           TextColor="{StaticResource Accent}" />
+                </Border>
+
+                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="ChantierPro"
+                           Style="{StaticResource PageTitle}"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{StaticResource Primary}" />
+                    <Label Text="Pilotez vos chantiers, vos équipes et vos budgets"
+                           Style="{StaticResource Caption}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- Carte de formulaire -->
+            <Border Style="{StaticResource Card}" Padding="20" StrokeThickness="1">
+                <VerticalStackLayout Spacing="18">
+
+                    <Label Text="Connexion" Style="{StaticResource Heading}" />
+
+                    <!-- Champ E-mail -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Adresse e-mail" Style="{StaticResource Caption}" />
+                        <Border Style="{StaticResource InputBorder}">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label Style="{StaticResource IconGlyph}"
+                                       Text="{x:Static helpers:Icons.Mail}"
+                                       FontSize="20" Margin="4,0,8,0" />
+                                <Entry Grid.Column="1"
+                                       Text="{Binding Email}"
+                                       Placeholder="nom@entreprise.com"
+                                       Keyboard="Email"
+                                       ReturnType="Next" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Champ Mot de passe -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Mot de passe" Style="{StaticResource Caption}" />
+                        <Border Style="{StaticResource InputBorder}">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Label Style="{StaticResource IconGlyph}"
+                                       Text="{x:Static helpers:Icons.Lock}"
+                                       FontSize="20" Margin="4,0,8,0" />
+                                <Entry Grid.Column="1"
+                                       Text="{Binding Password}"
+                                       Placeholder="••••••••"
+                                       IsPassword="{Binding IsPasswordHidden}"
+                                       ReturnType="Done" />
+                                <Button Grid.Column="2"
+                                        Style="{StaticResource IconButton}"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
+                                        Text="{Binding IsPasswordHidden, Converter={StaticResource InvertedBoolConverter}, ConverterParameter='visibility'}"
+                                        Command="{Binding TogglePasswordVisibilityCommand}">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding IsPasswordHidden}" Value="True">
+                                            <Setter Property="Text" Value="{x:Static helpers:Icons.VisibilityOff}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Button" Binding="{Binding IsPasswordHidden}" Value="False">
+                                            <Setter Property="Text" Value="{x:Static helpers:Icons.Visibility}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Mot de passe oublié -->
+                    <Button Style="{StaticResource GhostButton}"
+                            Text="Mot de passe oublié ?"
+                            HorizontalOptions="End"
+                            Padding="0"
+                            HeightRequest="36"
+                            FontSize="13"
+                            Command="{Binding ForgotPasswordCommand}" />
+
+                    <!-- Bouton Se connecter -->
+                    <Button Text="Se connecter"
+                            Style="{StaticResource AccentButton}"
+                            HeightRequest="50"
+                            FontSize="16"
+                            FontFamily="InterSemiBold"
+                            Command="{Binding LoginCommand}"
+                            IsEnabled="{Binding IsNotBusy}" />
+
+                    <!-- Séparateur -->
+                    <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="12" Margin="0,4">
+                        <BoxView Style="{StaticResource Divider}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="ou" Style="{StaticResource Caption}" />
+                        <BoxView Grid.Column="2" Style="{StaticResource Divider}" VerticalOptions="Center" />
+                    </Grid>
+
+                    <!-- Déverrouillage biométrique F-AUT-02 -->
+                    <Button Style="{StaticResource SecondaryButton}"
+                            HeightRequest="48"
+                            FontSize="14"
+                            Command="{Binding BiometricLoginCommand}">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="MaterialIcons"
+                                             Glyph="{x:Static helpers:Icons.Fingerprint}"
+                                             Color="{AppThemeBinding Light={StaticResource ActionBlue}, Dark={StaticResource ActionBlueDark}}"
+                                             Size="22" />
+                        </Button.ImageSource>
+                    </Button>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Mode hors ligne sécurisé -->
+            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                <Label Style="{StaticResource IconGlyph}"
+                       Text="{x:Static helpers:Icons.Shield}"
+                       FontSize="16"
+                       TextColor="{StaticResource Success}" />
+                <Label Text="Fonctionne 100% hors ligne sur le terrain"
+                       Style="{StaticResource Caption}" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

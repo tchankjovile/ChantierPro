@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:controls="clr-namespace:ChantierPro.Mobile.Controls"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.DashboardPage"
+             x:DataType="vm:DashboardViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête bleu ardoise avec branding et alertes -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource Primary}"
+                StrokeThickness="0"
+                Padding="20,16,20,20">
+            <VerticalStackLayout Spacing="16">
+                <!-- Ligne supérieure : Titre et Bouton Alertes -->
+                <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="ChantierPro"
+                               Style="{StaticResource OnPrimaryTitle}"
+                               FontSize="22" />
+                        <Label Text="Supervision &amp; Suivi en temps réel"
+                               Style="{StaticResource OnPrimaryBody}" />
+                    </VerticalStackLayout>
+
+                    <Button Grid.Column="1"
+                            Style="{StaticResource IconButton}"
+                            Text="{x:Static helpers:Icons.Notifications}"
+                            TextColor="{StaticResource White}"
+                            Command="{Binding OpenAlertsCommand}">
+                    </Button>
+                </Grid>
+
+                <!-- Bandeau d'alerte active (F-DASH-03) -->
+                <Border StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0"
+                        BackgroundColor="#FFFFFF1F"
+                        Padding="12,10"
+                        IsVisible="{Binding ActiveAlertsCount, Converter={StaticResource StringNotEmptyConverter}}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenAlertsCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Style="{StaticResource IconGlyph}"
+                               Text="{x:Static helpers:Icons.Warning}"
+                               FontSize="20"
+                               TextColor="{StaticResource Accent}"
+                               VerticalOptions="Center" />
+                        <Label Grid.Column="1"
+                               TextColor="{StaticResource White}"
+                               FontSize="13"
+                               FontFamily="InterMedium"
+                               Text="{Binding TopAlert.Message, TargetNullValue='Aucune alerte active'}"
+                               LineBreakMode="TailTruncation"
+                               VerticalOptions="Center" />
+                        <Border Grid.Column="2"
+                                Padding="8,2"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 10"
+                                BackgroundColor="{StaticResource Accent}"
+                                VerticalOptions="Center">
+                            <Label Text="{Binding ActiveAlertsCount, StringFormat='{0} alertes'}"
+                                   FontFamily="InterBold"
+                                   FontSize="11"
+                                   TextColor="{StaticResource Black}" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Contenu défilant -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="20" Padding="16,16,16,80">
+
+                <!-- Bannière d'état hors-ligne / synchro (F-PAR-02) -->
+                <controls:OfflineSyncBanner IsOnline="True" />
+
+                <!-- Indicateurs consolidés (F-DASH-02) -->
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="12" ColumnSpacing="12">
+                    <controls:StatCard Grid.Row="0" Grid.Column="0"
+                                       Title="BUDGET TOTAL"
+                                       Value="{Binding TotalBudgetConsolidated, Converter={StaticResource CompactMoneyConverter}}"
+                                       IconGlyph="{x:Static helpers:Icons.Payments}"
+                                       CardTone="Info" />
+
+                    <controls:StatCard Grid.Row="0" Grid.Column="1"
+                                       Title="DÉPENSÉ"
+                                       Value="{Binding TotalSpentConsolidated, Converter={StaticResource CompactMoneyConverter}}"
+                                       IconGlyph="{x:Static helpers:Icons.TrendingUp}"
+                                       CardTone="Warning" />
+
+                    <controls:StatCard Grid.Row="1" Grid.Column="0"
+                                       Title="BUDGET RESTANT"
+                                       Value="{Binding TotalRemainingConsolidated, Converter={StaticResource CompactMoneyConverter}}"
+                                       IconGlyph="{x:Static helpers:Icons.Savings}"
+                                       CardTone="Success" />
+
+                    <controls:StatCard Grid.Row="1" Grid.Column="1"
+                                       Title="AVANCEMENT MOYEN"
+                                       Value="{Binding AverageProgressConsolidated, Converter={StaticResource PercentFormatConverter}}"
+                                       IconGlyph="{x:Static helpers:Icons.Speed}"
+                                       CardTone="Success" />
+                </Grid>
+
+                <!-- Raccourcis d'actions rapides (F-DASH-04) -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Actions rapides" Style="{StaticResource Heading}" FontSize="16" />
+                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                        <!-- Pointage -->
+                        <Border Grid.Column="0" Style="{StaticResource CardFlat}" Padding="8,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding QuickAttendanceCommand}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.PlaylistAddCheck}" TextColor="{StaticResource ActionBlue}" FontSize="24" />
+                                <Label Text="Pointer" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" FontFamily="InterMedium" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Dépense -->
+                        <Border Grid.Column="1" Style="{StaticResource CardFlat}" Padding="8,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding QuickExpenseCommand}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.ReceiptLong}" TextColor="{StaticResource Warning}" FontSize="24" />
+                                <Label Text="Dépense" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" FontFamily="InterMedium" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Stock -->
+                        <Border Grid.Column="2" Style="{StaticResource CardFlat}" Padding="8,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding QuickStockMovementCommand}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Inventory2}" TextColor="{StaticResource Success}" FontSize="24" />
+                                <Label Text="Stock" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" FontFamily="InterMedium" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Nouveau chantier -->
+                        <Border Grid.Column="3" Style="{StaticResource CardFlat}" Padding="8,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CreateChantierCommand}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.AddCircle}" TextColor="{StaticResource Accent}" FontSize="24" />
+                                <Label Text="Chantier" Style="{StaticResource Caption}" HorizontalTextAlignment="Center" FontFamily="InterMedium" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!-- Recherche et Filtres (F-DASH-05) -->
+                <VerticalStackLayout Spacing="10">
+                    <Border Style="{StaticResource InputBorder}">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Search}" FontSize="20" Margin="4,0,8,0" />
+                            <Entry Grid.Column="1"
+                                   Placeholder="Rechercher un chantier, client, ville..."
+                                   Text="{Binding SearchText}"
+                                   ClearButtonVisibility="WhileEditing" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Filtres par statut -->
+                    <CollectionView ItemsSource="{Binding StatusFilters}"
+                                    ItemTemplate="{StaticResource ChipTemplate}"
+                                    HeightRequest="42">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
+                        </CollectionView.ItemsLayout>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- Titre de la liste -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Chantiers suivis" Style="{StaticResource Heading}" />
+                    <Label Grid.Column="1"
+                           Text="{Binding FilteredChantiers.Count, StringFormat='{0} projet(s)'}"
+                           Style="{StaticResource Caption}"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <!-- Liste des cartes chantiers (F-DASH-01) -->
+                <CollectionView ItemsSource="{Binding FilteredChantiers}">
+                    <CollectionView.EmptyView>
+                        <controls:EmptyStateView IconGlyph="{x:Static helpers:Icons.Domain}"
+                                                 Title="Aucun chantier trouvé"
+                                                 Description="Modifiez vos critères de recherche ou créez un nouveau chantier."
+                                                 ActionText="Créer un chantier"
+                                                 ActionCommand="{Binding CreateChantierCommand}" />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ChantierCardItem">
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=OpenChantierDetailCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+
+                                <VerticalStackLayout Spacing="12">
+                                    <!-- En-tête : Référence + Statut + Santé -->
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                        <Border Padding="6,2" StrokeShape="RoundRectangle 6" StrokeThickness="0" BackgroundColor="#1F3A5F14">
+                                            <Label Text="{Binding Reference}" Style="{StaticResource Overline}" TextColor="{StaticResource Primary}" />
+                                        </Border>
+
+                                        <HorizontalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                                            <Border WidthRequest="10" HeightRequest="10" StrokeShape="RoundRectangle 5" StrokeThickness="0"
+                                                    BackgroundColor="{Binding HealthTone, Converter={StaticResource ToneToColorConverter}}" />
+                                            <Label Text="{Binding HealthLabel}" Style="{StaticResource Caption}" />
+                                        </HorizontalStackLayout>
+
+                                        <Border Grid.Column="3" Padding="8,2" StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                                                BackgroundColor="{Binding StatusTone, Converter={StaticResource ToneToBgConverter}}">
+                                            <Label Text="{Binding StatusLabel}"
+                                                   FontFamily="InterSemiBold"
+                                                   FontSize="11"
+                                                   TextColor="{Binding StatusTone, Converter={StaticResource ToneToColorConverter}}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Nom et Client -->
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding Name}" Style="{StaticResource Heading}" FontSize="17" />
+                                        <Label Text="{Binding Client}" Style="{StaticResource Caption}" />
+                                    </VerticalStackLayout>
+
+                                    <!-- Jauge d'avancement -->
+                                    <controls:ProgressGauge Title="Avancement"
+                                                            Progress="{Binding Progress}"
+                                                            ExpectedProgress="{Binding ExpectedProgress}"
+                                                            GaugeTone="Success" />
+
+                                    <BoxView Style="{StaticResource Divider}" />
+
+                                    <!-- Budget vs Réalisé -->
+                                    <Grid ColumnDefinitions="*,*,Auto">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="1">
+                                            <Label Text="CONSOMMÉ" Style="{StaticResource Overline}" />
+                                            <Label Text="{Binding ConsumedBudget, Converter={StaticResource CompactMoneyConverter}}" Style="{StaticResource Body}" FontFamily="InterSemiBold" />
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                            <Label Text="TOTAL" Style="{StaticResource Overline}" />
+                                            <Label Text="{Binding TotalBudget, Converter={StaticResource CompactMoneyConverter}}" Style="{StaticResource Body}" FontFamily="InterSemiBold" />
+                                        </VerticalStackLayout>
+
+                                        <Border Grid.Column="2"
+                                                Padding="8,4"
+                                                StrokeShape="RoundRectangle 8"
+                                                StrokeThickness="0"
+                                                BackgroundColor="{Binding BudgetTone, Converter={StaticResource ToneToBgConverter}}"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding ConsumptionRate, StringFormat='{0:0.#}% consommé'}"
+                                                   FontFamily="InterBold"
+                                                   FontSize="12"
+                                                   TextColor="{Binding BudgetTone, Converter={StaticResource ToneToColorConverter}}" />
+                                        </Border>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bouton flottant FAB pour créer un chantier -->
+        <Button Grid.Row="1"
+                Style="{StaticResource FabButton}"
+                Text="{x:Static helpers:Icons.Add}"
+                Command="{Binding CreateChantierCommand}" />
+    </Grid>
+</ContentPage>

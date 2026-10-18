@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:controls="clr-namespace:ChantierPro.Mobile.Controls"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.ChantierDetailPage"
+             x:DataType="vm:ChantierDetailViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête bleu ardoise -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12,16,16">
+            <VerticalStackLayout Spacing="12">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                    <!-- Retour -->
+                    <Button Style="{StaticResource IconButton}"
+                            Text="{x:Static helpers:Icons.ArrowBack}"
+                            Clicked="OnBackClicked" />
+
+                    <!-- Titre & Référence -->
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                        <Label Text="{Binding Chantier.Name}"
+                               Style="{StaticResource OnPrimaryTitle}"
+                               FontSize="20"
+                               LineBreakMode="TailTruncation" />
+                        <Label Text="{Binding Chantier.Reference}"
+                               Style="{StaticResource OnPrimaryBody}"
+                               FontSize="12" />
+                    </VerticalStackLayout>
+
+                    <!-- GPS -->
+                    <Button Grid.Column="2"
+                            Style="{StaticResource IconButton}"
+                            Text="{x:Static helpers:Icons.LocationOn}"
+                            Command="{Binding NavigateGpsCommand}" />
+
+                    <!-- Menu Actions / Statut -->
+                    <Button Grid.Column="3"
+                            Style="{StaticResource IconButton}"
+                            Text="{x:Static helpers:Icons.Tune}"
+                            Command="{Binding ChangeStatusCommand}" />
+                </Grid>
+
+                <!-- Bandeau Statut & Santé -->
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Padding="10,4" StrokeShape="RoundRectangle 10" StrokeThickness="0"
+                            BackgroundColor="{Binding StatusTone, Converter={StaticResource ToneToBgConverter}}">
+                        <Label Text="{Binding StatusLabel}"
+                               FontFamily="InterSemiBold"
+                               FontSize="12"
+                               TextColor="{Binding StatusTone, Converter={StaticResource ToneToColorConverter}}" />
+                    </Border>
+
+                    <Border Grid.Column="2" Padding="10,4" StrokeShape="RoundRectangle 10" StrokeThickness="0"
+                            BackgroundColor="{Binding HealthTone, Converter={StaticResource ToneToBgConverter}}">
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.HealthAndSafety}" FontSize="16"
+                                   TextColor="{Binding HealthTone, Converter={StaticResource ToneToColorConverter}}" />
+                            <Label Text="{Binding HealthScore, StringFormat='Santé : {0}/100'}"
+                                   FontFamily="InterBold"
+                                   FontSize="12"
+                                   TextColor="{Binding HealthTone, Converter={StaticResource ToneToColorConverter}}" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,32">
+
+                <!-- Bannière Lecture Seule si Clôturé (RG-07) -->
+                <Border Style="{StaticResource CardFlat}"
+                        BackgroundColor="#FFE8E8"
+                        Padding="12,8"
+                        IsVisible="{Binding IsReadOnly}">
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Lock}" TextColor="{StaticResource Danger}" FontSize="20" />
+                        <Label Text="Chantier clôturé : modifications désactivées (RG-07)" Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Jauge Avancement Global -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <controls:ProgressGauge Title="Avancement global pondéré (RG-01)"
+                                                Progress="{Binding Progress}"
+                                                ExpectedProgress="{Binding ExpectedProgress}"
+                                                GaugeTone="Success" />
+
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                            <Label Text="{Binding Phases.Count, StringFormat='{0} phases programmées'}" Style="{StaticResource Caption}" />
+                            <Button Grid.Column="1" Style="{StaticResource GhostButton}" Text="Voir les phases →" Padding="0" HeightRequest="32" Command="{Binding OpenPhasesCommand}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Synthèse Financière -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Budget &amp; Coûts (RG-02)" Style="{StaticResource Heading}" FontSize="16" />
+                            <Border Grid.Column="1" Padding="8,2" StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                                    BackgroundColor="{Binding BudgetTone, Converter={StaticResource ToneToBgConverter}}">
+                                <Label Text="{Binding ConsumptionRate, StringFormat='{0:0.#}% consommé'}"
+                                       FontFamily="InterBold" FontSize="12"
+                                       TextColor="{Binding BudgetTone, Converter={StaticResource ToneToColorConverter}}" />
+                            </Border>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="BUDGET" Style="{StaticResource Overline}" />
+                                <Label Text="{Binding Chantier.TotalBudget, Converter={StaticResource CompactMoneyConverter}}" Style="{StaticResource Body}" FontFamily="InterBold" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="CONSOMMÉ" Style="{StaticResource Overline}" />
+                                <Label Text="{Binding ConsumedBudget, Converter={StaticResource CompactMoneyConverter}}" Style="{StaticResource Body}" FontFamily="InterBold" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                <Label Text="RESTANT" Style="{StaticResource Overline}" />
+                                <Label Text="{Binding RemainingBudget, Converter={StaticResource CompactMoneyConverter}}" Style="{StaticResource Body}" FontFamily="InterBold" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Projection EAC (F-DEP-06) -->
+                        <Border Style="{StaticResource CardFlat}" Padding="10,8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Spacing="1">
+                                    <Label Text="COÛT FINAL PROJETÉ (EAC)" Style="{StaticResource Overline}" />
+                                    <Label Text="Estimation basée sur le rythme actuel" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1"
+                                       Text="{Binding EstimateAtCompletion, Converter={StaticResource CompactMoneyConverter}}"
+                                       FontFamily="InterBold"
+                                       FontSize="15"
+                                       TextColor="{StaticResource Primary}"
+                                       VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Button Style="{StaticResource GhostButton}" Text="Détail des postes budgétaires →" Padding="0" HeightRequest="32" Command="{Binding OpenBudgetCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Hub des Modules -->
+                <Label Text="Modules du chantier" Style="{StaticResource Heading}" FontSize="16" />
+
+                <!-- Module Phases -->
+                <Border Style="{StaticResource CardFlat}" Padding="14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenPhasesCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.PlaylistAddCheck}" TextColor="{StaticResource ActionBlue}" FontSize="28" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label Text="Phases &amp; Tâches" Style="{StaticResource Subheading}" />
+                            <Label Text="Suivi d'avancement par corps d'état, historique" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.ChevronRight}" FontSize="20" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Module Stock -->
+                <Border Style="{StaticResource CardFlat}" Padding="14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenStockCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Inventory2}" TextColor="{StaticResource Success}" FontSize="28" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label Text="Stock de matériaux" Style="{StaticResource Subheading}" />
+                            <Label Text="Entrées/sorties, alertes ruptures, fournisseurs" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.ChevronRight}" FontSize="20" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Module Budget -->
+                <Border Style="{StaticResource CardFlat}" Padding="14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenBudgetCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Payments}" TextColor="{StaticResource Warning}" FontSize="28" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label Text="Budget &amp; Dépenses" Style="{StaticResource Subheading}" />
+                            <Label Text="Écarts prévu vs réalisé, justificatifs" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.ChevronRight}" FontSize="20" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Module Journal & Photos -->
+                <Border Style="{StaticResource CardFlat}" Padding="14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenJournalCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.PhotoLibrary}" TextColor="{StaticResource Accent}" FontSize="28" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label Text="Journal &amp; Galerie photos" Style="{StaticResource Subheading}" />
+                            <Label Text="Météo, incidents, photos horodatées" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.ChevronRight}" FontSize="20" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Actions de gestion -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,10,0,0">
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Text="Dupliquer (modèle)"
+                            Command="{Binding DuplicateChantierCommand}" />
+
+                    <Button Style="{StaticResource AccentButton}"
+                            Text="Modifier la fiche"
+                            Command="{Binding EditChantierCommand}"
+                            IsEnabled="{Binding IsReadOnly, Converter={StaticResource InvertedBoolConverter}}" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

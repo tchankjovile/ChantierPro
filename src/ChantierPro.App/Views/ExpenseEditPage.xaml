@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.ExpenseEditPage"
+             x:DataType="vm:ExpenseEditViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                <Label Grid.Column="1" Text="Saisir une dépense (F-DEP-02)" Style="{StaticResource OnPrimaryTitle}" FontSize="18" VerticalOptions="Center" Margin="8,0" />
+                <Button Grid.Column="2" Style="{StaticResource GhostButton}" Text="Valider" TextColor="{StaticResource Accent}" FontFamily="InterSemiBold" Command="{Binding SaveCommand}" />
+            </Grid>
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,40">
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="16">
+
+                        <!-- Chantier -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Chantier *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Picker ItemsSource="{Binding Chantiers}"
+                                        ItemDisplayBinding="{Binding Chantier.Name}"
+                                        SelectedItem="{Binding SelectedChantier}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Poste budgétaire (Catégorie) -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Poste budgétaire (F-DEP-01) *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Picker ItemsSource="{Binding Categories}"
+                                        SelectedItem="{Binding SelectedCategory}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Montant -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Montant de la dépense (FCFA) *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding AmountText}" Placeholder="0" Keyboard="Numeric" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Libellé -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Description / Libellé *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding Label}" Placeholder="Ex: Location tractopelle 5 jours" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Fournisseur -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Bénéficiaire / Fournisseur" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding Supplier}" Placeholder="Ex: Engins BTP Littoral" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Mode de paiement -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Mode de règlement" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Picker ItemsSource="{Binding PaymentModes}"
+                                        SelectedItem="{Binding SelectedPaymentMode}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Date -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Date de la dépense" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <DatePicker Date="{Binding ExpenseDate}" Format="dd/MM/yyyy" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Photo du justificatif -->
+                        <Button Style="{StaticResource SecondaryButton}"
+                                Text="Prendre en photo la facture / reçu"
+                                Command="{Binding AttachReceiptPhotoCommand}">
+                            <Button.ImageSource>
+                                <FontImageSource FontFamily="MaterialIcons" Glyph="{x:Static helpers:Icons.PhotoCamera}" Size="20" Color="{AppThemeBinding Light={StaticResource ActionBlue}, Dark={StaticResource ActionBlueDark}}" />
+                            </Button.ImageSource>
+                        </Button>
+
+                        <Button Text="Enregistrer la dépense"
+                                Style="{StaticResource AccentButton}"
+                                HeightRequest="50"
+                                FontSize="16"
+                                Command="{Binding SaveCommand}" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

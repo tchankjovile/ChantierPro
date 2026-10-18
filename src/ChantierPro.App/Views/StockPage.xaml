@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:controls="clr-namespace:ChantierPro.Mobile.Controls"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.StockPage"
+             x:DataType="vm:StockViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,16,16,16">
+            <VerticalStackLayout Spacing="14">
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Matériaux &amp; Stock" Style="{StaticResource OnPrimaryTitle}" FontSize="20" />
+                        <Label Text="{Binding ChantierName}" Style="{StaticResource OnPrimaryBody}" FontSize="13" />
+                    </VerticalStackLayout>
+
+                    <Button Grid.Column="1"
+                            Style="{StaticResource OnPrimaryButton}"
+                            Text="Changer"
+                            FontSize="12"
+                            HeightRequest="36"
+                            Padding="12,0"
+                            Command="{Binding SelectChantierCommand}" />
+                </Grid>
+
+                <!-- Bandeau KPIs du stock -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#FFFFFF1F" Padding="12,10">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="VALEUR DU STOCK" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                            <Label Text="{Binding TotalStockValue, Converter={StaticResource CompactMoneyConverter}}"
+                                   FontFamily="InterBold" FontSize="16" TextColor="{StaticResource White}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#FFFFFF1F" Padding="12,10">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="ALERTES RUPTURE" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="{Binding LowStockCount, StringFormat='{0} bas'}"
+                                       FontFamily="InterBold" FontSize="16" TextColor="{StaticResource Accent}" />
+                                <Label Text="{Binding CriticalStockCount, StringFormat='({0} épuisé)'}"
+                                       Style="{StaticResource Caption}" TextColor="#FFAEAE" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Onglets Stock / Mouvements -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Text="État des stocks"
+                            HeightRequest="38"
+                            FontSize="13"
+                            Padding="0"
+                            Command="{Binding SwitchTabCommand}"
+                            CommandParameter="stock">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding ShowStockTab}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource Accent}" />
+                                <Setter Property="TextColor" Value="{StaticResource Black}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding ShowStockTab}" Value="False">
+                                <Setter Property="BackgroundColor" Value="#FFFFFF26" />
+                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Text="Historique mouvements"
+                            HeightRequest="38"
+                            FontSize="13"
+                            Padding="0"
+                            Command="{Binding SwitchTabCommand}"
+                            CommandParameter="movements">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding ShowStockTab}" Value="False">
+                                <Setter Property="BackgroundColor" Value="{StaticResource Accent}" />
+                                <Setter Property="TextColor" Value="{StaticResource Black}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding ShowStockTab}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#FFFFFF26" />
+                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Contenu des onglets -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,80">
+
+                <!-- ONGLET 1 : Liste des matériaux et stock réel -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowStockTab}">
+                    <CollectionView ItemsSource="{Binding StockItems}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:StockItemVm">
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                    <VerticalStackLayout Spacing="10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <VerticalStackLayout Spacing="2">
+                                                <Label Text="{Binding Name}" Style="{StaticResource Heading}" FontSize="16" />
+                                                <Label Text="{Binding Category}" Style="{StaticResource Caption}" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Badge Quantité restante -->
+                                            <Border Grid.Column="1" Padding="10,4" StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                                                    BackgroundColor="{Binding StockTone, Converter={StaticResource ToneToBgConverter}}">
+                                                <Label Text="{Binding CurrentStock, StringFormat='{0:0.##}'}"
+                                                       FontFamily="InterBold" FontSize="15"
+                                                       TextColor="{Binding StockTone, Converter={StaticResource ToneToColorConverter}}" />
+                                            </Border>
+                                        </Grid>
+
+                                        <BoxView Style="{StaticResource Divider}" />
+
+                                        <!-- Détails : Unité, Seuil, Valeur, Prévision rupture -->
+                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                                            <VerticalStackLayout Spacing="2">
+                                                <Label Text="PRIX UNIT. (PMP)" Style="{StaticResource Overline}" />
+                                                <Label Text="{Binding UnitPrice, Converter={StaticResource CompactMoneyConverter}}" Style="{StaticResource Caption}" FontFamily="InterSemiBold" />
+                                            </VerticalStackLayout>
+
+                                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                                <Label Text="VALEUR TOTALE" Style="{StaticResource Overline}" />
+                                                <Label Text="{Binding StockValue, Converter={StaticResource CompactMoneyConverter}}" Style="{StaticResource Caption}" FontFamily="InterSemiBold" />
+                                            </VerticalStackLayout>
+
+                                            <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                                <Label Text="AUTONOMIE" Style="{StaticResource Overline}" />
+                                                <Label Text="{Binding DaysRemaining, StringFormat='~{0:0} jours', TargetNullValue='Régulier'}"
+                                                       Style="{StaticResource Caption}"
+                                                       FontFamily="InterSemiBold"
+                                                       TextColor="{Binding StockTone, Converter={StaticResource ToneToColorConverter}}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- ONGLET 2 : Historique des mouvements -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowStockTab, Converter={StaticResource InvertedBoolConverter}}">
+
+                    <!-- Filtre Entrées / Sorties -->
+                    <CollectionView ItemsSource="{Binding MovementFilters}"
+                                    ItemTemplate="{StaticResource ChipTemplate}"
+                                    HeightRequest="40">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
+                        </CollectionView.ItemsLayout>
+                    </CollectionView>
+
+                    <CollectionView ItemsSource="{Binding FilteredMovements}">
+                        <CollectionView.EmptyView>
+                            <controls:EmptyStateView IconGlyph="{x:Static helpers:Icons.Inventory2}"
+                                                     Title="Aucun mouvement"
+                                                     Description="Aucune entrée ni sortie de stock n'a été saisie pour ce filtre." />
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:MovementItemVm">
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <Border WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20" StrokeThickness="0"
+                                                BackgroundColor="{Binding TypeTone, Converter={StaticResource ToneToBgConverter}}" VerticalOptions="Center">
+                                            <Label Style="{StaticResource IconGlyph}"
+                                                   Text="{Binding Type, Converter={StaticResource InvertedBoolConverter}, ConverterParameter='arrow'}"
+                                                   TextColor="{Binding TypeTone, Converter={StaticResource ToneToColorConverter}}"
+                                                   FontSize="20">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Entree">
+                                                        <Setter Property="Text" Value="{x:Static helpers:Icons.MoveToInbox}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="Sortie">
+                                                        <Setter Property="Text" Value="{x:Static helpers:Icons.Outbox}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                            <Label Text="{Binding MaterialName}" Style="{StaticResource Subheading}" />
+                                            <Label Text="{Binding SupplierOrPhase, StringFormat='Affectation : {0}'}" Style="{StaticResource Caption}" />
+                                            <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy} • Bon : {1}', Source={x:Reference lblNote}}"
+                                                   x:Name="lblNote"
+                                                   Style="{StaticResource Caption}" />
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">
+                                            <Label Text="{Binding Quantity, StringFormat='{0:0.##}'}"
+                                                   FontFamily="InterBold" FontSize="15"
+                                                   TextColor="{Binding TypeTone, Converter={StaticResource ToneToColorConverter}}"
+                                                   HorizontalTextAlignment="End" />
+                                            <Label Text="{Binding TotalCost, Converter={StaticResource CompactMoneyConverter}}"
+                                                   Style="{StaticResource Caption}"
+                                                   HorizontalTextAlignment="End" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- FAB Nouveau Mouvement -->
+        <Button Grid.Row="1"
+                Style="{StaticResource FabButton}"
+                Text="{x:Static helpers:Icons.Add}"
+                Command="{Binding AddMovementCommand}" />
+    </Grid>
+</ContentPage>

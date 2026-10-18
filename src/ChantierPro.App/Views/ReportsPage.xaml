@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.ReportsPage"
+             x:DataType="vm:ReportsViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*">
+                <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                <Label Grid.Column="1" Text="Rapports &amp; Exports (F-RAP-01)" Style="{StaticResource OnPrimaryTitle}" FontSize="18" VerticalOptions="Center" Margin="8,0" />
+            </Grid>
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,40">
+
+                <!-- Sélecteur de Chantier -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Chantier concerné" Style="{StaticResource Caption}" />
+                        <Border Style="{StaticResource InputBorder}">
+                            <Picker ItemsSource="{Binding Chantiers}"
+                                    ItemDisplayBinding="{Binding Chantier.Name}"
+                                    SelectedItem="{Binding SelectedChantier}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Boutons d'exportation (F-RAP-03, F-RAP-04) -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Button Style="{StaticResource SecondaryButton}"
+                            Text="PDF"
+                            HeightRequest="48"
+                            FontSize="13"
+                            Padding="0"
+                            Command="{Binding ExportPdfCommand}">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="MaterialIcons" Glyph="{x:Static helpers:Icons.PictureAsPdf}" Size="18" Color="{AppThemeBinding Light={StaticResource ActionBlue}, Dark={StaticResource ActionBlueDark}}" />
+                        </Button.ImageSource>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Style="{StaticResource SecondaryButton}"
+                            Text="Excel"
+                            HeightRequest="48"
+                            FontSize="13"
+                            Padding="0"
+                            Command="{Binding ExportExcelCommand}">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="MaterialIcons" Glyph="{x:Static helpers:Icons.TableChart}" Size="18" Color="{StaticResource Success}" />
+                        </Button.ImageSource>
+                    </Button>
+
+                    <Button Grid.Column="2"
+                            Style="{StaticResource AccentButton}"
+                            Text="Partager"
+                            HeightRequest="48"
+                            FontSize="13"
+                            Padding="0"
+                            Command="{Binding ShareWhatsAppCommand}">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="MaterialIcons" Glyph="{x:Static helpers:Icons.Share}" Size="18" Color="{StaticResource Black}" />
+                        </Button.ImageSource>
+                    </Button>
+                </Grid>
+
+                <!-- Prévisualisation du rapport texte -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Aperçu du rapport de synthèse" Style="{StaticResource Heading}" FontSize="16" />
+                        <Border Style="{StaticResource CardFlat}" Padding="12" BackgroundColor="{AppThemeBinding Light=#FAFAFA, Dark=#121926}">
+                            <Label Text="{Binding ReportSummaryText}"
+                                   FontFamily="InterRegular"
+                                   FontSize="13"
+                                   LineHeight="1.4"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

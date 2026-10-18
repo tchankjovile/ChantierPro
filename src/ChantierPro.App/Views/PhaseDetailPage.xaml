@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:models="clr-namespace:ChantierPro.Core.Models;assembly=ChantierPro.Core"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.PhaseDetailPage"
+             x:DataType="vm:PhaseDetailViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1" Margin="8,0">
+                    <Label Text="{Binding PhaseName}" Style="{StaticResource OnPrimaryTitle}" FontSize="18" LineBreakMode="TailTruncation" />
+                    <Label Text="{Binding ChantierName}" Style="{StaticResource OnPrimaryBody}" FontSize="12" />
+                </VerticalStackLayout>
+                <Button Grid.Column="2" Style="{StaticResource GhostButton}" Text="Enregistrer" TextColor="{StaticResource Accent}" FontFamily="InterSemiBold" Command="{Binding SaveProgressCommand}" />
+            </Grid>
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,40">
+
+                <!-- Carte de saisie de l'avancement (F-PHA-03) -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="AVANCEMENT DE LA PHASE" Style="{StaticResource Overline}" />
+                                <Label Text="Curseur ou valeur précise (0 à 100%)" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+
+                            <!-- Affichage en gros caractères de la valeur actuelle -->
+                            <Border Grid.Column="1" Padding="12,6" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="#1F3A5F14">
+                                <Label Text="{Binding ProgressValue, StringFormat='{0:0.#} %'}"
+                                       FontFamily="InterBold"
+                                       FontSize="22"
+                                       TextColor="{StaticResource Primary}" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Curseur interactif Slider -->
+                        <Slider Minimum="0"
+                                Maximum="100"
+                                Value="{Binding ProgressValue}" />
+
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Label Text="0 %" Style="{StaticResource Caption}" />
+                            <Label Grid.Column="1" HorizontalOptions="Center" Text="{Binding ExpectedProgress, StringFormat='Prévu planning : {0:0.#}%'}" Style="{StaticResource Caption}" />
+                            <Label Grid.Column="2" Text="100 %" Style="{StaticResource Caption}" />
+                        </Grid>
+
+                        <BoxView Style="{StaticResource Divider}" />
+
+                        <!-- Note / Commentaire obligatoire de traçabilité (RG-06) -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Note de traçabilité (RG-06)" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}" Padding="8">
+                                <Editor Text="{Binding UpdateNote}" Placeholder="Ex: Coulage achevé, décoffrage prévu demain matin..." AutoSize="TextChanges" MinimumHeightRequest="70" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Photo de preuve (F-PHA-07) -->
+                        <Button Style="{StaticResource SecondaryButton}"
+                                Text="Prendre une photo de preuve"
+                                Command="{Binding TakeProofPhotoCommand}">
+                            <Button.ImageSource>
+                                <FontImageSource FontFamily="MaterialIcons" Glyph="{x:Static helpers:Icons.PhotoCamera}" Size="20" Color="{AppThemeBinding Light={StaticResource ActionBlue}, Dark={StaticResource ActionBlueDark}}" />
+                            </Button.ImageSource>
+                        </Button>
+
+                        <Button Text="Valider l'avancement"
+                                Style="{StaticResource AccentButton}"
+                                HeightRequest="48"
+                                FontSize="15"
+                                Command="{Binding SaveProgressCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Gestion des tâches avec cases à cocher (F-PHA-05) -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Tâches de la phase (F-PHA-05)" Style="{StaticResource Heading}" FontSize="16" />
+
+                        <!-- Liste des tâches -->
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Tasks}" Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:PhaseTask">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalOptions="Center">
+                                        <CheckBox IsChecked="{Binding IsDone}"
+                                                  CheckedChanged="OnTaskCheckedChanged" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Label}"
+                                               Style="{StaticResource Body}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <!-- Ajout d'une nouvelle tâche -->
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,6,0,0">
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding NewTaskLabel}" Placeholder="Nouvelle sous-tâche..." ReturnType="Done" />
+                            </Border>
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Text="Ajouter"
+                                    Command="{Binding AddTaskCommand}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Historique des mises à jour (RG-06) -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Historique des saisies (RG-06)" Style="{StaticResource Heading}" FontSize="16" />
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding History}" Spacing="10">
+                            <BindableLayout.EmptyView>
+                                <Label Text="Aucune saisie antérieure enregistrée." Style="{StaticResource Caption}" />
+                            </BindableLayout.EmptyView>
+
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:ProgressEntry">
+                                    <Border Style="{StaticResource CardFlat}" Padding="10">
+                                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="{Binding Progress, StringFormat='Avancement : {0:0.#}%'}" FontFamily="InterBold" FontSize="13" />
+                                                <Label Text="•" Style="{StaticResource Caption}" />
+                                                <Label Text="{Binding Author}" Style="{StaticResource Caption}" FontFamily="InterMedium" />
+                                            </HorizontalStackLayout>
+                                            <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource Caption}" />
+                                            <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Note}" Style="{StaticResource Caption}" TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

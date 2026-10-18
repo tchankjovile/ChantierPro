@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+        x:Class="ChantierPro.Mobile.Controls.OfflineSyncBanner"
+        StrokeThickness="0"
+        StrokeShape="RoundRectangle 8"
+        Padding="12,8"
+        Margin="0,0,0,8"
+        BackgroundColor="#E8F0FE">
+
+    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+        <Label x:Name="lblIcon"
+               Grid.Column="0"
+               Style="{StaticResource IconGlyph}"
+               FontSize="18"
+               TextColor="{StaticResource ActionBlue}"
+               VerticalOptions="Center" />
+
+        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+            <Label x:Name="lblStatus"
+                   FontFamily="InterSemiBold"
+                   FontSize="12"
+                   TextColor="{StaticResource Primary}"
+                   Text="Mode local sécurisé (Offline-First)" />
+            <Label x:Name="lblDetail"
+                   Style="{StaticResource Caption}"
+                   FontSize="11"
+                   Text="Toutes les saisies sont sauvegardées localement." />
+        </VerticalStackLayout>
+
+        <Button x:Name="btnSync"
+                Grid.Column="2"
+                Style="{StaticResource GhostButton}"
+                Text="Sync"
+                FontSize="12"
+                Padding="8,0"
+                HeightRequest="32"
+                VerticalOptions="Center" />
+    </Grid>
+</Border>

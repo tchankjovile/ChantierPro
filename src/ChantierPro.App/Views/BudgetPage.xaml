@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.BudgetPage"
+             x:DataType="vm:BudgetViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12,16,16">
+            <VerticalStackLayout Spacing="12">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2" Margin="8,0">
+                        <Label Text="Budget &amp; Dépenses" Style="{StaticResource OnPrimaryTitle}" FontSize="18" />
+                        <Label Text="{Binding ChantierName}" Style="{StaticResource OnPrimaryBody}" FontSize="12" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Bandeau Consommation globale -->
+                <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#FFFFFF1F" Padding="14,10">
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="PRÉVU" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                            <Label Text="{Binding TotalBudget, Converter={StaticResource CompactMoneyConverter}}" FontFamily="InterBold" FontSize="15" TextColor="{StaticResource White}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="CONSOMMÉ (RG-02)" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                            <Label Text="{Binding TotalConsumed, Converter={StaticResource CompactMoneyConverter}}" FontFamily="InterBold" FontSize="15" TextColor="{StaticResource Accent}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="2" Spacing="2">
+                            <Label Text="RESTANT" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                            <Label Text="{Binding TotalRemaining, Converter={StaticResource CompactMoneyConverter}}" FontFamily="InterBold" FontSize="15" TextColor="{StaticResource White}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Onglets Postes / Dépenses -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Text="Par poste budgétaire" HeightRequest="36" FontSize="13" Padding="0"
+                            Command="{Binding SwitchTabCommand}" CommandParameter="lines">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding ShowLinesTab}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource Accent}" />
+                                <Setter Property="TextColor" Value="{StaticResource Black}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding ShowLinesTab}" Value="False">
+                                <Setter Property="BackgroundColor" Value="#FFFFFF26" />
+                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <Button Grid.Column="1" Text="Dépenses directes" HeightRequest="36" FontSize="13" Padding="0"
+                            Command="{Binding SwitchTabCommand}" CommandParameter="expenses">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding ShowLinesTab}" Value="False">
+                                <Setter Property="BackgroundColor" Value="{StaticResource Accent}" />
+                                <Setter Property="TextColor" Value="{StaticResource Black}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding ShowLinesTab}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#FFFFFF26" />
+                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="14" Padding="16,14,16,80">
+
+                <!-- ONGLET 1 : Postes budgétaires (F-DEP-04) -->
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowLinesTab}">
+                    <CollectionView ItemsSource="{Binding Lines}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:BudgetLineItemVm">
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                    <VerticalStackLayout Spacing="10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                            <Border WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 18" StrokeThickness="0"
+                                                    BackgroundColor="{Binding Tone, Converter={StaticResource ToneToBgConverter}}" VerticalOptions="Center">
+                                                <Label Style="{StaticResource IconGlyph}" Text="{Binding CategoryIcon}"
+                                                       TextColor="{Binding Tone, Converter={StaticResource ToneToColorConverter}}" FontSize="18" />
+                                            </Border>
+
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                                                <Label Text="{Binding CategoryLabel}" Style="{StaticResource Heading}" FontSize="15" />
+                                                <Label Text="{Binding Planned, Converter={StaticResource MoneyFormatConverter}, StringFormat='Prévu : {0}'}" Style="{StaticResource Caption}" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Badge Taux de consommation -->
+                                            <Border Grid.Column="2" Padding="8,3" StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                                                    BackgroundColor="{Binding Tone, Converter={StaticResource ToneToBgConverter}}" VerticalOptions="Center">
+                                                <Label Text="{Binding RatePercent, StringFormat='{0:0.#}%'}"
+                                                       FontFamily="InterBold" FontSize="12"
+                                                       TextColor="{Binding Tone, Converter={StaticResource ToneToColorConverter}}" />
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Jauge visuelle de la ligne -->
+                                        <ProgressBar Progress="{Binding Line.Rate}"
+                                                     ProgressColor="{Binding Tone, Converter={StaticResource ToneToColorConverter}}" />
+
+                                        <BoxView Style="{StaticResource Divider}" />
+
+                                        <!-- Tableau Écart (F-DEP-04) -->
+                                        <Grid ColumnDefinitions="*,*">
+                                            <VerticalStackLayout Spacing="1">
+                                                <Label Text="RÉALISÉ" Style="{StaticResource Overline}" />
+                                                <Label Text="{Binding Actual, Converter={StaticResource MoneyFormatConverter}}" Style="{StaticResource Caption}" FontFamily="InterSemiBold" />
+                                            </VerticalStackLayout>
+
+                                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="1">
+                                                <Label Text="ÉCART (PRÉVU - RÉALISÉ)" Style="{StaticResource Overline}" HorizontalTextAlignment="End" />
+                                                <Label Text="{Binding Variance, Converter={StaticResource MoneyFormatConverter}, StringFormat='{0}'}"
+                                                       Style="{StaticResource Caption}" FontFamily="InterBold"
+                                                       TextColor="{Binding Tone, Converter={StaticResource ToneToColorConverter}}"
+                                                       HorizontalTextAlignment="End" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- ONGLET 2 : Liste des dépenses directes -->
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowLinesTab, Converter={StaticResource InvertedBoolConverter}}">
+                    <CollectionView ItemsSource="{Binding RecentExpenses}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ExpenseItemVm">
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        <Border WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20" StrokeThickness="0"
+                                                BackgroundColor="#1F3A5F14" VerticalOptions="Center">
+                                            <Label Style="{StaticResource IconGlyph}" Text="{Binding CategoryIcon}" TextColor="{StaticResource Primary}" FontSize="20" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                            <Label Text="{Binding Label}" Style="{StaticResource Subheading}" />
+                                            <Label Text="{Binding Supplier, StringFormat='Fournisseur : {0}'}" Style="{StaticResource Caption}" />
+                                            <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy} • {1}', Source={x:Reference lblPay}}"
+                                                   x:Name="lblPay" Style="{StaticResource Caption}" />
+                                        </VerticalStackLayout>
+
+                                        <Label Grid.Column="2"
+                                               Text="{Binding Amount, Converter={StaticResource MoneyFormatConverter}}"
+                                               FontFamily="InterBold" FontSize="14"
+                                               TextColor="{StaticResource Danger}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- FAB Saisir une dépense -->
+        <Button Grid.Row="1"
+                Style="{StaticResource FabButton}"
+                Text="{x:Static helpers:Icons.Add}"
+                Command="{Binding AddExpenseCommand}" />
+    </Grid>
+</ContentPage>

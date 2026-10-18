@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<VerticalStackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     x:Class="ChantierPro.Mobile.Controls.EmptyStateView"
+                     Spacing="16"
+                     Padding="32"
+                     HorizontalOptions="Center"
+                     VerticalOptions="Center">
+
+    <Border WidthRequest="72" HeightRequest="72"
+            StrokeShape="RoundRectangle 36"
+            StrokeThickness="0"
+            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"
+            HorizontalOptions="Center">
+        <Label x:Name="lblIcon"
+               Style="{StaticResource IconGlyph}"
+               FontSize="36"
+               TextColor="{AppThemeBinding Light={StaticResource ActionBlue}, Dark={StaticResource ActionBlueDark}}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center" />
+    </Border>
+
+    <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+        <Label x:Name="lblTitle"
+               Style="{StaticResource Heading}"
+               HorizontalTextAlignment="Center"
+               Text="Aucun élément" />
+        <Label x:Name="lblDescription"
+               Style="{StaticResource Caption}"
+               HorizontalTextAlignment="Center"
+               Text="Il n'y a pour l'instant aucune donnée à afficher." />
+    </VerticalStackLayout>
+
+    <Button x:Name="btnAction"
+            Style="{StaticResource AccentButton}"
+            Text="Ajouter"
+            HorizontalOptions="Center"
+            IsVisible="False" />
+</VerticalStackLayout>

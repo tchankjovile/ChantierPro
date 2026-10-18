@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:models="clr-namespace:ChantierPro.Core.Models;assembly=ChantierPro.Core"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.StockMovementEditPage"
+             x:DataType="vm:StockMovementEditViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                <Label Grid.Column="1" Text="{Binding Title}" Style="{StaticResource OnPrimaryTitle}" FontSize="18" VerticalOptions="Center" Margin="8,0" />
+                <Button Grid.Column="2" Style="{StaticResource GhostButton}" Text="Enregistrer" TextColor="{StaticResource Accent}" FontFamily="InterSemiBold" Command="{Binding SaveCommand}" />
+            </Grid>
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,40">
+
+                <!-- Sélecteur Entrée / Sortie -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Text="Entrée de stock"
+                            HeightRequest="44"
+                            FontSize="14"
+                            Command="{Binding SetTypeCommand}"
+                            CommandParameter="entree">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsEntry}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource Success}" />
+                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsEntry}" Value="False">
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Text="Sortie de stock"
+                            HeightRequest="44"
+                            FontSize="14"
+                            Command="{Binding SetTypeCommand}"
+                            CommandParameter="sortie">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsEntry}" Value="False">
+                                <Setter Property="BackgroundColor" Value="{StaticResource ActionBlue}" />
+                                <Setter Property="TextColor" Value="{StaticResource White}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsEntry}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="16">
+
+                        <!-- Chantier concerné -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Chantier *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Picker ItemsSource="{Binding Chantiers}"
+                                        ItemDisplayBinding="{Binding Chantier.Name}"
+                                        SelectedItem="{Binding SelectedChantier}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Choix du Matériau + Scan Barcode -->
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Matériau *" Style="{StaticResource Caption}" />
+                                <Button Grid.Column="1" Style="{StaticResource GhostButton}" Text="Scanner code-barres" Padding="0" HeightRequest="28" FontSize="12" Command="{Binding ScanBarcodeCommand}" />
+                            </Grid>
+                            <Border Style="{StaticResource InputBorder}">
+                                <Picker ItemsSource="{Binding Materials}"
+                                        ItemDisplayBinding="{Binding Name}"
+                                        SelectedItem="{Binding SelectedMaterial}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Stock actuellement disponible -->
+                        <Border Style="{StaticResource CardFlat}" Padding="10,8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Stock disponible sur le chantier :" Style="{StaticResource Caption}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding AvailableStock, StringFormat='{0:0.##} en réserve'}"
+                                       FontFamily="InterBold" FontSize="14" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Affectation à une phase (si Sortie F-MAT-03) -->
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding IsEntry, Converter={StaticResource InvertedBoolConverter}}">
+                            <Label Text="Phase de destination (F-MAT-03) *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Picker ItemsSource="{Binding Phases}"
+                                        ItemDisplayBinding="{Binding Name}"
+                                        SelectedItem="{Binding SelectedPhase}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Fournisseur & Bon de livraison (si Entrée F-MAT-02) -->
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding IsEntry}">
+                            <Label Text="Fournisseur (F-MAT-02)" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Picker ItemsSource="{Binding Suppliers}"
+                                        ItemDisplayBinding="{Binding Name}"
+                                        SelectedItem="{Binding SelectedSupplier}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding IsEntry}">
+                            <Label Text="N° de bon de livraison" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding DeliveryNote}" Placeholder="Ex: BL-2026-9812" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Quantité et Prix unitaire -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="Quantité *" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputBorder}">
+                                    <Entry Text="{Binding QuantityText}" Placeholder="0" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                <Label Text="Prix unitaire (FCFA)" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputBorder}">
+                                    <Entry Text="{Binding UnitPriceText}" Placeholder="0" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Date du mouvement -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Date du mouvement" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <DatePicker Date="{Binding MovementDate}" Format="dd/MM/yyyy" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Contrôle de stock négatif (RG-03) -->
+                        <Border Style="{StaticResource CardFlat}" BackgroundColor="#FFF2F2" Padding="10" IsVisible="{Binding ShowNegativeStockOverride}">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Avertissement RG-03 : Sortie supérieure au stock disponible"
+                                       Style="{StaticResource Caption}" TextColor="{StaticResource Danger}" FontFamily="InterSemiBold" />
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <CheckBox IsChecked="{Binding AuthorizeNegativeStock}" />
+                                    <Label Grid.Column="1" Text="Autoriser exceptionnellement le stock négatif sur ce chantier"
+                                           Style="{StaticResource Caption}" VerticalOptions="Center" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Photo du bon de livraison / Justificatif (F-MAT-07) -->
+                        <Button Style="{StaticResource SecondaryButton}"
+                                Text="Joindre photo du bon de livraison"
+                                Command="{Binding AttachPhotoCommand}">
+                            <Button.ImageSource>
+                                <FontImageSource FontFamily="MaterialIcons" Glyph="{x:Static helpers:Icons.PhotoCamera}" Size="20" Color="{AppThemeBinding Light={StaticResource ActionBlue}, Dark={StaticResource ActionBlueDark}}" />
+                            </Button.ImageSource>
+                        </Button>
+
+                        <Button Text="Enregistrer le mouvement"
+                                Style="{StaticResource AccentButton}"
+                                HeightRequest="50"
+                                FontSize="16"
+                                Command="{Binding SaveCommand}" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

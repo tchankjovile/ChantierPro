@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.ChantierEditPage"
+             x:DataType="vm:ChantierEditViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                <Label Grid.Column="1" Text="{Binding Title}" Style="{StaticResource OnPrimaryTitle}" FontSize="18" VerticalOptions="Center" Margin="8,0" />
+                <Button Grid.Column="2" Style="{StaticResource GhostButton}" Text="Enregistrer" TextColor="{StaticResource Accent}" FontFamily="InterSemiBold" Command="{Binding SaveCommand}" />
+            </Grid>
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,40">
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="16">
+
+                        <Label Text="Informations générales (F-CHA-01)" Style="{StaticResource Heading}" FontSize="16" />
+
+                        <!-- Nom -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Nom du chantier *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding Name}" Placeholder="Ex: Résidence Les Palmiers" ReturnType="Next" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Référence -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Référence *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding Reference}" Placeholder="Ex: CH-2026-001" ReturnType="Next" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Client -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Client / Maître d'ouvrage *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding Client}" Placeholder="Ex: SCI Palm Promotion / M. Kamga" ReturnType="Next" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Budget total -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Budget global prévisionnel (FCFA) *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding TotalBudgetText}" Placeholder="Ex: 150000000" Keyboard="Numeric" ReturnType="Next" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Adresse -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Adresse / Localisation" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding Address}" Placeholder="Ex: Boulevard de la Liberté, Akwa, Douala" ReturnType="Next" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- GPS -->
+                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Latitude" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputBorder}">
+                                    <Entry Text="{Binding LatitudeText}" Placeholder="4.051056" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Longitude" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputBorder}">
+                                    <Entry Text="{Binding LongitudeText}" Placeholder="9.767868" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="2"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Text="GPS"
+                                    VerticalOptions="End"
+                                    HeightRequest="48"
+                                    Padding="12,0"
+                                    Command="{Binding GetCurrentLocationCommand}" />
+                        </Grid>
+
+                        <!-- Dates -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="Date de début" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputBorder}">
+                                    <DatePicker Date="{Binding StartDate}" Format="dd/MM/yyyy" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                <Label Text="Fin prévue" Style="{StaticResource Caption}" />
+                                <Border Style="{StaticResource InputBorder}">
+                                    <DatePicker Date="{Binding EndDate}" Format="dd/MM/yyyy" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Description -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Description du projet" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}" Padding="8">
+                                <Editor Text="{Binding Description}" Placeholder="Détails techniques, contraintes, consignes spécifiques..." AutoSize="TextChanges" MinimumHeightRequest="80" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Note pédagogique Création rapide (Critère 1 : < 5 min) -->
+                <Border Style="{StaticResource CardFlat}" Padding="12" BackgroundColor="#E8F4FD">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Info}" TextColor="{StaticResource ActionBlue}" FontSize="20" VerticalOptions="Start" />
+                        <Label Text="En créant ce chantier, 7 phases types (Terrassement, Fondations, Gros œuvre...) et la répartition budgétaire standard seront automatiquement générées pour vous faire gagner du temps."
+                               Style="{StaticResource Caption}"
+                               TextColor="{StaticResource Primary}" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Bouton d'action principal -->
+                <Button Text="Valider et enregistrer"
+                        Style="{StaticResource AccentButton}"
+                        HeightRequest="50"
+                        FontSize="16"
+                        Command="{Binding SaveCommand}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

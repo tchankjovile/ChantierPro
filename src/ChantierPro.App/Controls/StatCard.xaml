@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="ChantierPro.Mobile.Controls.StatCard"
+        Style="{StaticResource Card}"
+        Padding="14"
+        StrokeThickness="1">
+
+    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="6">
+        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+            <Label x:Name="lblCaption" Style="{StaticResource Overline}" Text="INDICATEUR" />
+            <Label x:Name="lblValue" Style="{StaticResource KpiValue}" Text="0 FCFA" />
+        </VerticalStackLayout>
+
+        <Border x:Name="iconContainer"
+                Grid.Row="0" Grid.Column="1"
+                WidthRequest="40" HeightRequest="40"
+                StrokeShape="RoundRectangle 12"
+                StrokeThickness="0"
+                BackgroundColor="#1F3A5F1A"
+                VerticalOptions="Start">
+            <Label x:Name="lblIcon"
+                   Style="{StaticResource IconGlyph}"
+                   FontSize="20"
+                   TextColor="{StaticResource Primary}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Border>
+
+        <Label x:Name="lblSubtitle"
+               Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+               Style="{StaticResource Caption}"
+               Text="" />
+    </Grid>
+</Border>

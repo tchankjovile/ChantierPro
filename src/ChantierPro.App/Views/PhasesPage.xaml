@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:controls="clr-namespace:ChantierPro.Mobile.Controls"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.PhasesPage"
+             x:DataType="vm:PhasesViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12,16,16">
+            <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2" Margin="8,0">
+                        <Label Text="Phases &amp; Avancement" Style="{StaticResource OnPrimaryTitle}" FontSize="18" />
+                        <Label Text="{Binding ChantierName}" Style="{StaticResource OnPrimaryBody}" FontSize="12" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Carte synthétique d'avancement global (RG-01) -->
+                <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#FFFFFF1F" Padding="14,10">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="6">
+                        <Label Text="AVANCEMENT GLOBAL PONDÉRÉ" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding GlobalProgress, Converter={StaticResource PercentFormatConverter}}"
+                               FontFamily="InterBold" FontSize="18" TextColor="{StaticResource White}" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="{Binding ExpectedGlobalProgress, StringFormat='Prévu à date : {0:0.#}%'}"
+                               Style="{StaticResource Caption}" TextColor="#C0D0E5" />
+
+                        <!-- Badge conformité RG-01 -->
+                        <Border Grid.Row="1" Grid.Column="1" Padding="6,2" StrokeShape="RoundRectangle 6" StrokeThickness="0"
+                                BackgroundColor="{StaticResource Success}">
+                            <Label Text="Poids 100% (RG-01)" FontSize="10" FontFamily="InterSemiBold" TextColor="{StaticResource White}" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Liste des phases -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="12" Padding="16,16,16,32">
+
+                <!-- Alerte si phases en retard (F-ALE-04) -->
+                <Border Style="{StaticResource CardFlat}" BackgroundColor="#FFF4E5" Padding="12"
+                        IsVisible="{Binding LatePhasesCount, Converter={StaticResource StringNotEmptyConverter}}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Warning}" TextColor="{StaticResource Warning}" FontSize="20" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{Binding LatePhasesCount, StringFormat='{0} phase(s) en retard par rapport au planning prévisionnel (F-ALE-04).'}"
+                               Style="{StaticResource Caption}" TextColor="#8A5000" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Collection des phases -->
+                <CollectionView ItemsSource="{Binding Phases}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PhaseItemVm">
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PhasesViewModel}}, Path=OpenPhaseDetailCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        <!-- Numéro d'ordre -->
+                                        <Border WidthRequest="28" HeightRequest="28" StrokeShape="RoundRectangle 14" StrokeThickness="0"
+                                                BackgroundColor="#1F3A5F14" VerticalOptions="Center">
+                                            <Label Text="{Binding Order}" FontFamily="InterBold" FontSize="13" TextColor="{StaticResource Primary}"
+                                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                                            <Label Text="{Binding Name}" Style="{StaticResource Heading}" FontSize="16" />
+                                            <Label Text="{Binding DateRangeText}" Style="{StaticResource Caption}" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Badge Poids -->
+                                        <Border Grid.Column="2" Padding="8,3" StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                                                BackgroundColor="{Binding StatusTone, Converter={StaticResource ToneToBgConverter}}" VerticalOptions="Center">
+                                            <Label Text="{Binding Weight, StringFormat='Poids {0:0.#}%'}"
+                                                   FontFamily="InterSemiBold" FontSize="11"
+                                                   TextColor="{Binding StatusTone, Converter={StaticResource ToneToColorConverter}}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Jauge de phase -->
+                                    <controls:ProgressGauge Title="Avancement"
+                                                            Progress="{Binding Progress}"
+                                                            ExpectedProgress="{Binding ExpectedProgress}"
+                                                            GaugeTone="{Binding StatusTone}" />
+
+                                    <BoxView Style="{StaticResource Divider}" />
+
+                                    <!-- Pied de carte : Budget et tâches -->
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding AllocatedBudget, Converter={StaticResource MoneyFormatConverter}}"
+                                               Style="{StaticResource Caption}" FontFamily="InterMedium" />
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="4">
+                                            <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.PlaylistAddCheck}" FontSize="16" />
+                                            <Label Text="{Binding TasksDone, StringFormat='{0} / '}" Style="{StaticResource Caption}" />
+                                            <Label Text="{Binding TasksTotal, StringFormat='{0} tâches'}" Style="{StaticResource Caption}" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

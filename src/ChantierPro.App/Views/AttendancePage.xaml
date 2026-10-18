@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.AttendancePage"
+             x:DataType="vm:AttendanceViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,16,16,16">
+            <VerticalStackLayout Spacing="14">
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Pointage quotidien (F-MO-02)" Style="{StaticResource OnPrimaryTitle}" FontSize="20" />
+                        <Label Text="{Binding SelectedChantier.Chantier.Name, TargetNullValue='Sélectionnez un chantier'}"
+                               Style="{StaticResource OnPrimaryBody}" FontSize="13" />
+                    </VerticalStackLayout>
+
+                    <!-- Sélecteur de date -->
+                    <Border Grid.Column="1" Padding="8,4" StrokeShape="RoundRectangle 8" StrokeThickness="0" BackgroundColor="#FFFFFF26">
+                        <DatePicker Date="{Binding SelectedDate}" Format="dd/MM/yyyy" TextColor="{StaticResource White}" MinimumHeightRequest="36" />
+                    </Border>
+                </Grid>
+
+                <!-- Bandeau Synthèse Journalière (RG-05) -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Border StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="#FFFFFF1F" Padding="10,8">
+                        <VerticalStackLayout Spacing="1">
+                            <Label Text="PRÉSENTS" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                            <Label Text="{Binding PresentCount, StringFormat='{0} ouvriers'}" FontFamily="InterBold" FontSize="15" TextColor="{StaticResource White}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="1" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="#FFFFFF1F" Padding="10,8">
+                        <VerticalStackLayout Spacing="1">
+                            <Label Text="HEURES SUP" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                            <Label Text="{Binding TotalOvertimeHours, StringFormat='{0:0} h'}" FontFamily="InterBold" FontSize="15" TextColor="{StaticResource Accent}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="2" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="#FFFFFF1F" Padding="10,8">
+                        <VerticalStackLayout Spacing="1">
+                            <Label Text="COÛT MO (RG-05)" Style="{StaticResource Overline}" TextColor="#E0E8F5" />
+                            <Label Text="{Binding TotalDayLabourCost, Converter={StaticResource CompactMoneyConverter}}" FontFamily="InterBold" FontSize="15" TextColor="{StaticResource White}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Actions collectives ultra-rapides (F-MO-03 : < 1 min) -->
+                <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
+                    <Button Text="✓ Tous présents"
+                            Style="{StaticResource OnPrimaryButton}"
+                            HeightRequest="36" FontSize="12" Padding="0"
+                            Command="{Binding MarkAllPresentCommand}" />
+
+                    <Button Grid.Column="1"
+                            Text="✗ Tous absents"
+                            Style="{StaticResource OnPrimaryButton}"
+                            HeightRequest="36" FontSize="12" Padding="0"
+                            Command="{Binding MarkAllAbsentCommand}" />
+
+                    <Button Grid.Column="2"
+                            Text="Annuaire"
+                            Style="{StaticResource AccentButton}"
+                            HeightRequest="36" FontSize="12" Padding="12,0"
+                            Clicked="OnOpenWorkersClicked" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Liste des ouvriers à pointer -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="10" Padding="16,14,16,80">
+
+                <CollectionView ItemsSource="{Binding Rows}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AttendanceRowVm">
+                            <Border Style="{StaticResource Card}" Padding="12" Margin="0,0,0,8">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" VerticalOptions="Center">
+
+                                    <!-- Identité ouvrier -->
+                                    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="15" />
+                                        <Label Text="{Binding Trade}" Style="{StaticResource Caption}" />
+                                        <Label Text="{Binding Cost, Converter={StaticResource MoneyFormatConverter}, StringFormat='Coût : {0}'}"
+                                               Style="{StaticResource Caption}" FontFamily="InterMedium" TextColor="{StaticResource Primary}" />
+                                    </VerticalStackLayout>
+
+                                    <!-- Bouton Heures Sup -->
+                                    <Border Grid.Column="1" Padding="8,4" StrokeShape="RoundRectangle 8" StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"
+                                            VerticalOptions="Center">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AttendanceViewModel}}, Path=AddOvertimeCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <VerticalStackLayout Spacing="1" HorizontalOptions="Center">
+                                            <Label Text="H. SUP" Style="{StaticResource Overline}" FontSize="9" HorizontalTextAlignment="Center" />
+                                            <Label Text="{Binding OvertimeHours, StringFormat='+{0:0} h'}" FontFamily="InterBold" FontSize="12" HorizontalTextAlignment="Center" TextColor="{StaticResource Warning}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <!-- Bouton Statut interactif (Cycle) -->
+                                    <Button Grid.Column="2"
+                                            HeightRequest="42"
+                                            WidthRequest="105"
+                                            Padding="4,0"
+                                            FontSize="12"
+                                            FontFamily="InterSemiBold"
+                                            Text="{Binding Status}"
+                                            BackgroundColor="{Binding StatusTone, Converter={StaticResource ToneToColorConverter}}"
+                                            TextColor="{StaticResource White}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AttendanceViewModel}}, Path=CycleStatusCommand}"
+                                            CommandParameter="{Binding .}">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Present">
+                                                <Setter Property="Text" Value="Présent" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Retard">
+                                                <Setter Property="Text" Value="Retard" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="DemiJournee">
+                                                <Setter Property="Text" Value="1/2 Jour" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Absent">
+                                                <Setter Property="Text" Value="Absent" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bouton flottant / bas pour Enregistrer le pointage -->
+        <Border Grid.Row="1" VerticalOptions="End" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                Padding="16,12" StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}">
+            <Button Text="Valider le pointage"
+                    Style="{StaticResource AccentButton}"
+                    HeightRequest="48"
+                    FontSize="16"
+                    Command="{Binding SaveCommand}" />
+        </Border>
+    </Grid>
+</ContentPage>

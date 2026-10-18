@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:models="clr-namespace:ChantierPro.Core.Models;assembly=ChantierPro.Core"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.JournalPage"
+             x:DataType="vm:JournalViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2" Margin="8,0">
+                    <Label Text="Journal &amp; Photos (F-CHA-05)" Style="{StaticResource OnPrimaryTitle}" FontSize="18" />
+                    <Label Text="{Binding ChantierName}" Style="{StaticResource OnPrimaryBody}" FontSize="12" />
+                </VerticalStackLayout>
+                <Button Grid.Column="2" Style="{StaticResource GhostButton}" Text="+ Écrire" TextColor="{StaticResource Accent}" FontFamily="InterSemiBold" Command="{Binding ToggleFormCommand}" />
+            </Grid>
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,14,16,40">
+
+                <!-- Galerie photos du chantier (F-CHA-04) -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Photos du chantier (F-CHA-04)" Style="{StaticResource Heading}" FontSize="15" />
+                            <Button Grid.Column="1" Style="{StaticResource GhostButton}" Text="+ Photo" Padding="0" HeightRequest="28" FontSize="12" Command="{Binding AddPhotoCommand}" />
+                        </Grid>
+
+                        <CollectionView ItemsSource="{Binding Photos}" HeightRequest="110">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.EmptyView>
+                                <Label Text="Aucune photo enregistrée." Style="{StaticResource Caption}" VerticalOptions="Center" />
+                            </CollectionView.EmptyView>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:SitePhoto">
+                                    <Border WidthRequest="130" HeightRequest="100" StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="#1F3A5F1A">
+                                        <Grid RowDefinitions="*,Auto">
+                                            <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Photo}" TextColor="{StaticResource Primary}" FontSize="32" VerticalOptions="Center" HorizontalOptions="Center" />
+                                            <Border Grid.Row="1" BackgroundColor="#00000088" Padding="6,2">
+                                                <Label Text="{Binding Stage}" Style="{StaticResource Caption}" TextColor="{StaticResource White}" FontSize="10" HorizontalOptions="Center" />
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Formulaire de saisie d'une note (si déplié) -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding ShowForm}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Nouvelle note de chantier" Style="{StaticResource Heading}" FontSize="15" />
+
+                        <!-- Météo -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Conditions météo" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Picker ItemsSource="{Binding WeatherOptions}"
+                                        SelectedItem="{Binding SelectedWeather}" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Faits marquants -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Note / Travaux du jour *" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}" Padding="8">
+                                <Editor Text="{Binding NoteText}" Placeholder="Coulage béton, pose gaines, contrôle armatures..." AutoSize="TextChanges" MinimumHeightRequest="70" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Incidents -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Incidents ou retards constatés" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding IncidentText}" Placeholder="Ex: Panne bétonnière 1h, pluie..." />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Visiteurs -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Visiteurs du chantier" Style="{StaticResource Caption}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding VisitorsText}" Placeholder="Ex: Architecte, Bureau de contrôle, Client..." />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Button Text="Enregistrer la note"
+                                Style="{StaticResource AccentButton}"
+                                HeightRequest="44"
+                                Command="{Binding SaveEntryCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Entrées du journal -->
+                <Label Text="Journal chronologique" Style="{StaticResource Heading}" FontSize="16" />
+
+                <CollectionView ItemsSource="{Binding Entries}">
+                    <CollectionView.EmptyView>
+                        <controls:EmptyStateView IconGlyph="{x:Static helpers:Icons.Notes}"
+                                                 Title="Journal vierge"
+                                                 Description="Ajoutez votre première note de chantier quotidienne." />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:JournalItemVm">
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        <Border WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 18" StrokeThickness="0"
+                                                BackgroundColor="#1F3A5F14" VerticalOptions="Center">
+                                            <Label Style="{StaticResource IconGlyph}" Text="{Binding WeatherIcon}" TextColor="{StaticResource Primary}" FontSize="20" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                                            <Label Text="{Binding Date, StringFormat='{0:dddd dd MMMM yyyy}'}" Style="{StaticResource Subheading}" FontSize="14" />
+                                            <Label Text="{Binding WeatherLabel, StringFormat='Météo : {0}'}" Style="{StaticResource Caption}" />
+                                        </VerticalStackLayout>
+
+                                        <Label Grid.Column="2" Text="{Binding Author}" Style="{StaticResource Caption}" FontFamily="InterMedium" VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <Label Text="{Binding Note}" Style="{StaticResource Body}" FontSize="14" />
+
+                                    <BoxView Style="{StaticResource Divider}" />
+
+                                    <Grid ColumnDefinitions="*,*">
+                                        <Label Text="{Binding Incident, StringFormat='Incident : {0}'}" Style="{StaticResource Caption}" />
+                                        <Label Grid.Column="1" Text="{Binding Visitors, StringFormat='Visiteurs : {0}'}" Style="{StaticResource Caption}" HorizontalTextAlignment="End" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:controls="clr-namespace:ChantierPro.Mobile.Controls"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.AlertsPage"
+             x:DataType="vm:AlertsViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Style="{StaticResource IconButton}" Text="{x:Static helpers:Icons.ArrowBack}" Clicked="OnBackClicked" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2" Margin="8,0">
+                    <Label Text="Centre d'alertes (F-ALE-07)" Style="{StaticResource OnPrimaryTitle}" FontSize="18" />
+                    <Label Text="{Binding UnreadCount, StringFormat='{0} non lue(s)'}" Style="{StaticResource OnPrimaryBody}" FontSize="12" />
+                </VerticalStackLayout>
+                <Button Grid.Column="2" Style="{StaticResource GhostButton}" Text="Tout lire" TextColor="{StaticResource Accent}" FontSize="12" Command="{Binding MarkAllAsReadCommand}" />
+            </Grid>
+        </Border>
+
+        <VerticalStackLayout Grid.Row="1" Spacing="12" Padding="16,14,16,20">
+
+            <!-- Filtres par type d'alerte -->
+            <CollectionView ItemsSource="{Binding TypeFilters}"
+                            ItemTemplate="{StaticResource ChipTemplate}"
+                            HeightRequest="42">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
+                </CollectionView.ItemsLayout>
+            </CollectionView>
+
+            <!-- Liste des alertes -->
+            <CollectionView ItemsSource="{Binding FilteredAlerts}">
+                <CollectionView.EmptyView>
+                    <controls:EmptyStateView IconGlyph="{x:Static helpers:Icons.CheckCircle}"
+                                             Title="Aucune alerte"
+                                             Description="Tous les chantiers fonctionnent actuellement selon les prévisions !" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AlertItemVm">
+                        <Border Style="{StaticResource Card}" Padding="12" Margin="0,0,0,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AlertsViewModel}}, Path=MarkAsReadCommand}"
+                                                      CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Border WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20" StrokeThickness="0"
+                                        BackgroundColor="{Binding Tone, Converter={StaticResource ToneToBgConverter}}" VerticalOptions="Center">
+                                    <Label Style="{StaticResource IconGlyph}" Text="{Binding IconGlyph}"
+                                           TextColor="{Binding Tone, Converter={StaticResource ToneToColorConverter}}" FontSize="20" />
+                                </Border>
+
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Border Padding="6,2" StrokeShape="RoundRectangle 6" StrokeThickness="0"
+                                                BackgroundColor="{Binding Tone, Converter={StaticResource ToneToBgConverter}}">
+                                            <Label Text="{Binding LevelLabel}" FontFamily="InterBold" FontSize="10"
+                                                   TextColor="{Binding Tone, Converter={StaticResource ToneToColorConverter}}" />
+                                        </Border>
+                                        <Label Text="{Binding TypeLabel}" Style="{StaticResource Caption}" FontFamily="InterMedium" />
+                                    </HorizontalStackLayout>
+
+                                    <Label Text="{Binding Message}" Style="{StaticResource Body}" FontSize="14" />
+                                    <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+
+                                <!-- Puce non lue -->
+                                <Border Grid.Column="2" WidthRequest="10" HeightRequest="10" StrokeShape="RoundRectangle 5" StrokeThickness="0"
+                                        BackgroundColor="{StaticResource Accent}" VerticalOptions="Center"
+                                        IsVisible="{Binding IsRead, Converter={StaticResource InvertedBoolConverter}}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

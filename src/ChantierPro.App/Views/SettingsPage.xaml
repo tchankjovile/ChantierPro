@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChantierPro.Mobile.ViewModels"
+             xmlns:helpers="clr-namespace:ChantierPro.Mobile.Helpers"
+             x:Class="ChantierPro.Mobile.Views.SettingsPage"
+             x:DataType="vm:SettingsViewModel">
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="20,16">
+            <Label Text="Profil &amp; Paramètres" Style="{StaticResource OnPrimaryTitle}" FontSize="20" />
+        </Border>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,40">
+
+                <!-- Carte Profil Utilisateur (F-AUT-04) -->
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Border WidthRequest="54" HeightRequest="54" StrokeShape="RoundRectangle 27" StrokeThickness="0"
+                                BackgroundColor="{StaticResource Primary}" VerticalOptions="Center">
+                            <Label Style="{StaticResource IconGlyph}" Text="{x:Static helpers:Icons.Person}" TextColor="{StaticResource White}" FontSize="28" />
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label Text="{Binding UserName}" Style="{StaticResource Heading}" FontSize="16" />
+                            <Label Text="{Binding UserEmail}" Style="{StaticResource Caption}" />
+                            <Border Padding="6,2" StrokeShape="RoundRectangle 6" StrokeThickness="0" BackgroundColor="#1F3A5F14" HorizontalOptions="Start" Margin="0,2,0,0">
+                                <Label Text="{Binding UserRole}" Style="{StaticResource Overline}" FontSize="10" TextColor="{StaticResource Primary}" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Préférences d'affichage (F-PAR-03 & §5 Mode Terrain) -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Affichage &amp; Ergonomie" Style="{StaticResource Heading}" FontSize="15" />
+
+                        <!-- Thème sombre -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="1">
+                                <Label Text="Thème sombre" Style="{StaticResource Subheading}" />
+                                <Label Text="Économie de batterie et confort visuel" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding IsDarkMode}" VerticalOptions="Center" />
+                        </Grid>
+
+                        <BoxView Style="{StaticResource Divider}" />
+
+                        <!-- Mode « Terrain » (Fonctionnalité innovante §5) -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="1">
+                                <Label Text="Mode « Terrain »" Style="{StaticResource Subheading}" />
+                                <Label Text="Gros boutons 60dp utilisables avec des gants et en plein soleil" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding IsTerrainMode}" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Préférences régionales -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Préférences régionales" Style="{StaticResource Heading}" FontSize="15" />
+
+                        <!-- Devise -->
+                        <Border Style="{StaticResource CardFlat}" Padding="10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ChangeCurrencyCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Devise principale" Style="{StaticResource Body}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding SelectedCurrency}" Style="{StaticResource Caption}" FontFamily="InterSemiBold" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Langue -->
+                        <Border Style="{StaticResource CardFlat}" Padding="10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ChangeLanguageCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Langue" Style="{StaticResource Body}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding SelectedLanguage}" Style="{StaticResource Caption}" FontFamily="InterSemiBold" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Sauvegarde et Sécurité (F-PAR-05) -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Données &amp; Sauvegarde (F-PAR-05)" Style="{StaticResource Heading}" FontSize="15" />
+
+                        <Button Style="{StaticResource SecondaryButton}"
+                                Text="Sauvegarder les données locales"
+                                Command="{Binding BackupDataCommand}" />
+
+                        <Button Style="{StaticResource GhostButton}"
+                                Text="Restaurer les données démo"
+                                TextColor="{StaticResource Warning}"
+                                Command="{Binding RestoreDataCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Déconnexion -->
+                <Button Style="{StaticResource DangerButton}"
+                        Text="Se déconnecter"
+                        HeightRequest="48"
+                        Command="{Binding LogoutCommand}" />
+
+                <Label Text="ChantierPro v1.0 • .NET MAUI • Mode Offline-First"
+                       Style="{StaticResource Caption}"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,10,0,0" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

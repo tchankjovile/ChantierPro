@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- ===== Identité : bleu ardoise + orange sécurité ===== -->
+    <Color x:Key="Primary">#1F3A5F</Color>
+    <Color x:Key="PrimaryDark">#162B47</Color>
+    <Color x:Key="PrimaryLight">#3C5F8D</Color>
+    <Color x:Key="Accent">#F28C28</Color>
+    <Color x:Key="AccentDark">#D9741A</Color>
+    <Color x:Key="ActionBlue">#2563EB</Color>
+    <Color x:Key="ActionBlueDark">#4F8BFF</Color>
+
+    <!-- ===== Sémantique : vert conforme / orange vigilance / rouge critique / bleu action ===== -->
+    <Color x:Key="Success">#1F9D61</Color>
+    <Color x:Key="Warning">#D98200</Color>
+    <Color x:Key="Danger">#E04848</Color>
+    <Color x:Key="Info">#3B82F6</Color>
+
+    <!-- ===== Thème clair ===== -->
+    <Color x:Key="BackgroundLight">#F3F6FA</Color>
+    <Color x:Key="SurfaceLight">#FFFFFF</Color>
+    <Color x:Key="SurfaceVariantLight">#EBF0F7</Color>
+    <Color x:Key="BorderLight">#D8E0EB</Color>
+    <Color x:Key="TextPrimaryLight">#0F1B2D</Color>
+    <Color x:Key="TextSecondaryLight">#556580</Color>
+    <Color x:Key="TextDisabledLight">#9AA8BD</Color>
+
+    <!-- ===== Thème sombre ===== -->
+    <Color x:Key="BackgroundDark">#0D1524</Color>
+    <Color x:Key="SurfaceDark">#16223A</Color>
+    <Color x:Key="SurfaceVariantDark">#1F2F4D</Color>
+    <Color x:Key="BorderDark">#2D3F5E</Color>
+    <Color x:Key="TextPrimaryDark">#EAF0FA</Color>
+    <Color x:Key="TextSecondaryDark">#A3B3CC</Color>
+    <Color x:Key="TextDisabledDark">#5F7192</Color>
+
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#000000</Color>
+
+    <!-- Hauteur minimale des cibles tactiles (48 dp) ; passe à 60 en mode « Terrain » -->
+    <x:Double x:Key="TouchTarget">48</x:Double>
+    <x:Double x:Key="BaseFontSize">14</x:Double>
+
+</ResourceDictionary>
