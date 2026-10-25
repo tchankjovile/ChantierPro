@@ -41,7 +41,7 @@
                 WidthRequest="0" />
     </Grid>
 
-    <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding ShowMinMax, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
+    <Grid x:Name="legendGrid" ColumnDefinitions="Auto,*,Auto">
         <Label Style="{StaticResource Caption}" Text="0 %" />
         <Label x:Name="lblExpected" Grid.Column="1" HorizontalOptions="Center" Style="{StaticResource Caption}" Text="" />
         <Label Grid.Column="2" Style="{StaticResource Caption}" Text="100 %" />

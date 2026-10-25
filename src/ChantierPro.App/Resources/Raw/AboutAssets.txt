@@ -1,0 +1,2 @@
+ChantierPro Raw Assets.
+Ce dossier contient les ressources brutes incluses dans l'application mobile (ex: modeles de rapports, fichiers d'initialisation).

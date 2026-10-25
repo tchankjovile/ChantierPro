@@ -110,26 +110,11 @@
                                             Padding="4,0"
                                             FontSize="12"
                                             FontFamily="InterSemiBold"
-                                            Text="{Binding Status}"
+                                            Text="{Binding StatusLabel}"
                                             BackgroundColor="{Binding StatusTone, Converter={StaticResource ToneToColorConverter}}"
                                             TextColor="{StaticResource White}"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AttendanceViewModel}}, Path=CycleStatusCommand}"
-                                            CommandParameter="{Binding .}">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Present">
-                                                <Setter Property="Text" Value="Présent" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Retard">
-                                                <Setter Property="Text" Value="Retard" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="DemiJournee">
-                                                <Setter Property="Text" Value="1/2 Jour" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Absent">
-                                                <Setter Property="Text" Value="Absent" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
+                                            CommandParameter="{Binding .}" />
 
                                 </Grid>
                             </Border>

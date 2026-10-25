@@ -33,6 +33,14 @@ public partial class AttendanceRowVm : ObservableObject
         _ => Tone.Danger
     };
 
+    public string StatusLabel => Status switch
+    {
+        AttendanceStatus.Present => "Présent",
+        AttendanceStatus.Retard => "Retard",
+        AttendanceStatus.DemiJournee => "1/2 Jour",
+        _ => "Absent"
+    };
+
     public AttendanceRowVm(Worker worker, Attendance? existing = null)
     {
         Worker = worker;
@@ -51,6 +59,7 @@ public partial class AttendanceRowVm : ObservableObject
     {
         Cost = LabourCostCalculator.DayCost(DailyRate, Status, OvertimeHours);
         OnPropertyChanged(nameof(StatusTone));
+        OnPropertyChanged(nameof(StatusLabel));
     }
 }
 

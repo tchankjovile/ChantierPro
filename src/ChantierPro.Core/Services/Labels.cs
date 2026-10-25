@@ -101,7 +101,7 @@ public static class Money
 
     public static string Format(decimal amount, string currency = "FCFA")
     {
-        var number = amount.ToString("N0", Fr).Replace('\u202f', '\u00a0');
+        var number = amount.ToString("N0", Fr).Replace('\u202f', '\u00a0').Replace(' ', '\u00a0');
         return $"{number}\u00a0{currency}";
     }
 

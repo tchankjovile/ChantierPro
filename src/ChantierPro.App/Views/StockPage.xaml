@@ -190,9 +190,7 @@
                                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                                             <Label Text="{Binding MaterialName}" Style="{StaticResource Subheading}" />
                                             <Label Text="{Binding SupplierOrPhase, StringFormat='Affectation : {0}'}" Style="{StaticResource Caption}" />
-                                            <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy} • Bon : {1}', Source={x:Reference lblNote}}"
-                                                   x:Name="lblNote"
-                                                   Style="{StaticResource Caption}" />
+                                            <Label Text="{Binding Subtitle}" Style="{StaticResource Caption}" />
                                         </VerticalStackLayout>
 
                                         <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">

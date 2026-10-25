@@ -46,6 +46,7 @@ public class MovementItemVm
     public decimal TotalCost => Movement.TotalCost;
     public DateTime Date => Movement.Date;
     public string DeliveryNote => Movement.DeliveryNoteNumber ?? "—";
+    public string Subtitle => $"{Date:dd/MM/yyyy} • Bon : {DeliveryNote}";
     public Tone TypeTone => Movement.Type == MovementType.Entree ? Tone.Success : Tone.Info;
     public string TypeLabel => Movement.Type == MovementType.Entree ? "Entrée" : "Sortie";
 

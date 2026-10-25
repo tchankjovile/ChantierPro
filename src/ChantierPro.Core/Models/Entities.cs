@@ -53,6 +53,9 @@ public class PhaseTask
     public Guid PhaseId { get; set; }
     public string Label { get; set; } = string.Empty;
     public bool IsDone { get; set; }
+
+    /// <summary>Position de la tâche dans la checklist de la phase (tri stable côté serveur).</summary>
+    public int Order { get; set; }
 }
 
 /// <summary>Historique d'une mise à jour d'avancement (F-PHA-03, RG-06).</summary>

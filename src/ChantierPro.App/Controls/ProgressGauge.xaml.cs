@@ -20,6 +20,10 @@ public partial class ProgressGauge : VerticalStackLayout
         BindableProperty.Create(nameof(GaugeTone), typeof(Tone), typeof(ProgressGauge), Tone.Success,
             propertyChanged: (b, o, n) => ((ProgressGauge)b).UpdateTone((Tone)n));
 
+    public static readonly BindableProperty ShowMinMaxProperty =
+        BindableProperty.Create(nameof(ShowMinMax), typeof(bool), typeof(ProgressGauge), true,
+            propertyChanged: (b, o, n) => ((ProgressGauge)b).legendGrid.IsVisible = (bool)n);
+
     public string Title
     {
         get => (string)GetValue(TitleProperty);
@@ -42,6 +46,12 @@ public partial class ProgressGauge : VerticalStackLayout
     {
         get => (Tone)GetValue(GaugeToneProperty);
         set => SetValue(GaugeToneProperty, value);
+    }
+
+    public bool ShowMinMax
+    {
+        get => (bool)GetValue(ShowMinMaxProperty);
+        set => SetValue(ShowMinMaxProperty, value);
     }
 
     public ProgressGauge()

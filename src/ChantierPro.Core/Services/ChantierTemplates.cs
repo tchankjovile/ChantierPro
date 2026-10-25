@@ -57,8 +57,9 @@ public static class ChantierTemplates
                 AllocatedBudget = budget,
                 Progress = 0m
             };
+            var taskOrder = 1;
             foreach (var t in tasks)
-                phase.Tasks.Add(new PhaseTask { PhaseId = phase.Id, Label = t });
+                phase.Tasks.Add(new PhaseTask { PhaseId = phase.Id, Label = t, Order = taskOrder++ });
             phases.Add(phase);
             cursor = phase.EndDate;
         }

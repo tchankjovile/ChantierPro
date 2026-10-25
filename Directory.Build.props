@@ -7,16 +7,6 @@
     <Company>ChantierPro</Company>
     <Product>ChantierPro</Product>
     <Version>1.0.0</Version>
-
-    <!--
-      ====================================================================
-      VERSION DU SDK .NET CIBLEE PAR L'APPLICATION MAUI
-      Modifiez UNIQUEMENT cette valeur si le PC de test n'a pas ce SDK :
-        10.0 -> .NET 10 (LTS, version recommandee)
-         9.0 -> .NET 9
-      Verifier avec :  dotnet --list-sdks
-      ====================================================================
-    -->
-    <ChantierProDotNet>10.0</ChantierProDotNet>
+    <ChantierProDotNet Condition="'$(ChantierProDotNet)' == ''">8.0</ChantierProDotNet>
   </PropertyGroup>
 </Project>

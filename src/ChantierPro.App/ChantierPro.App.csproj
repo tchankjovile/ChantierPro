@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- La version cible se change dans Directory.Build.props (propriete ChantierProDotNet). -->
-    <TargetFrameworks>net$(ChantierProDotNet)-android;net$(ChantierProDotNet)-ios</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net$(ChantierProDotNet)-windows10.0.19041.0</TargetFrameworks>
+    <!-- La version cible s'adapte automatiquement dans Directory.Build.props (propriete ChantierProDotNet). -->
+    <!-- Sur Windows, la cible Windows est placee en premier pour etre selectionnee par defaut dans Visual Studio. -->
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net$(ChantierProDotNet)-windows10.0.19041.0;net$(ChantierProDotNet)-android</TargetFrameworks>
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net$(ChantierProDotNet)-android</TargetFrameworks>
+    <!-- iOS : uniquement sur macOS (sous Windows, la cible iOS fait echouer la restauration/compilation). -->
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net$(ChantierProDotNet)-ios</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
     <RootNamespace>ChantierPro.Mobile</RootNamespace>
@@ -22,6 +25,11 @@
     <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-ios'))">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</TargetPlatformMinVersion>
+
+    <!-- Permet de lancer l'application sur Windows sans certificat MSIX ni Mode Developpeur Windows -->
+    <WindowsPackageType Condition="$(TargetFramework.Contains('-windows'))">None</WindowsPackageType>
+    <WindowsAppSDKSelfContained Condition="$(TargetFramework.Contains('-windows'))">true</WindowsAppSDKSelfContained>
+    <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 

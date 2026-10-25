@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net$(ChantierProDotNet)</TargetFramework>
     <!-- Permet d'executer les tests meme si seul un runtime .NET plus recent est installe. -->
     <RollForward>Major</RollForward>
     <IsPackable>false</IsPackable>

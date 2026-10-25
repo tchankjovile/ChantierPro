@@ -7,7 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChantierPro.Core", "src\Cha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChantierPro.App", "src\ChantierPro.App\ChantierPro.App.csproj", "{A1B2C3D4-0002-4000-8000-000000000002}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChantierPro.Data", "src\ChantierPro.Data\ChantierPro.Data.csproj", "{A1B2C3D4-0004-4000-8000-000000000004}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChantierPro.Api", "src\ChantierPro.Api\ChantierPro.Api.csproj", "{A1B2C3D4-0005-4000-8000-000000000005}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChantierPro.Tests", "tests\ChantierPro.Tests\ChantierPro.Tests.csproj", "{A1B2C3D4-0003-4000-8000-000000000003}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChantierPro.Api.Tests", "tests\ChantierPro.Api.Tests\ChantierPro.Api.Tests.csproj", "{A1B2C3D4-0006-4000-8000-000000000006}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +31,22 @@ Global
 		{A1B2C3D4-0002-4000-8000-000000000002}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B2C3D4-0002-4000-8000-000000000002}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1B2C3D4-0002-4000-8000-000000000002}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A1B2C3D4-0004-4000-8000-000000000004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-0004-4000-8000-000000000004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-0004-4000-8000-000000000004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-0004-4000-8000-000000000004}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-0005-4000-8000-000000000005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-0005-4000-8000-000000000005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-0005-4000-8000-000000000005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-0005-4000-8000-000000000005}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1B2C3D4-0003-4000-8000-000000000003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1B2C3D4-0003-4000-8000-000000000003}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1B2C3D4-0003-4000-8000-000000000003}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B2C3D4-0003-4000-8000-000000000003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-0006-4000-8000-000000000006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-0006-4000-8000-000000000006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-0006-4000-8000-000000000006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-0006-4000-8000-000000000006}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

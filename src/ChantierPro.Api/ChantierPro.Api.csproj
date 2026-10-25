@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>ChantierPro.Api</RootNamespace>
+    <AssemblyName>ChantierPro.Api</AssemblyName>
+    <!-- Permet d'exécuter l'API si seul un runtime .NET plus récent (9, 10) est installé. -->
+    <RollForward>Major</RollForward>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChantierPro.Data\ChantierPro.Data.csproj" />
+  </ItemGroup>
+
+</Project>
